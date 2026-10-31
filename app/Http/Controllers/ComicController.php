@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comic;
+use App\Models\Genre;
 
 class ComicController extends Controller
 {
@@ -13,7 +14,16 @@ class ComicController extends Controller
 
     public function index(Request $request)
     {
-        $comics = Comic::all();
+        $genreId = $request->query('genre_id');
+
+        $query = Comic::with('genre');
+
+        if ($genreId) {
+            $query = $query->where('genre_id', $genreId);
+        }
+
+        $comics = $query->get();
+
         return view('comics.index', compact('comics'));
     }
 
@@ -23,7 +33,8 @@ class ComicController extends Controller
      */
     public function create()
     {
-        return view('comics.create');
+        $genres = Genre::all();
+        return view('comics.create', compact('genres'));
     }
 
     /**
@@ -34,28 +45,14 @@ class ComicController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
-            'genre' => 'required|in:Action,Comedy,Drama,Fantasy,Horror,Mystery,Romance',
+            'genre_id' => 'required|exists:genres,id',
             'rate' => 'required|numeric|min:1|max:5',
             'chapter' => 'required|numeric|min:1|max:2000',
-            'is_complete' => 'required|in:true,false'
+            'is_completed' => 'required|in:1,0',
         ]);
         
-        $comics = $this->comics();
-        $id =max(array_keys($comics)) + 1;
-
-        $comics[$id] = [
-            'id' => $id,
-            'title' => $validated['title'],
-            'author' => $validated['author'],
-            'genre' => $validated['genre'],
-            'rate' => $validated['rate'],
-            'chapter' => $validated['chapter'],
-            'is_complete' => $validated['is_complete']
-        ];
-
-        $this->saveComics($comics);
-
-        return redirect()->route('comics.index')->with('success', 'Comic added successfully!');
+        Comic::create($validated);
+        return redirect()->route('comics.index')->with('success', 'Comic created successfully.');
     }
 
     /**
@@ -94,23 +91,8 @@ class ComicController extends Controller
     public function filter($value)
     {
         return redirect()->route('comics.index', [
-            'genre' => $value
+            'genre_id' => $value
         ]);
-    }
-
-    private function comics()
-    {
-        $path = storage_path('app/comics.json');
-
-        return json_decode(file_get_contents($path), true);
-    }
-
-    private function saveComics($comics)
-    {
-        file_put_contents(
-            storage_path('app/comics.json'),
-            json_encode($comics, JSON_PRETTY_PRINT)
-        );
     }
 
 }

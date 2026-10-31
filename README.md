@@ -1,16 +1,16 @@
-Lab Activity 6
+Lab Activity 10
 
 #Answers
 
-F1 Which column did you make nullable, and why that one and not another?
+G1 Which column did you turn into a table, and why that one and not another?
 
- - the one i make nullable is author and rate. because author can be sometimes be unknown and rate before rate user should add comic first.
+ - the one i turn into a table is genre. because genre is a fixed list and the same genre repeat in many comics like dark fantasy is in attack on titan and demon slayer. the other columns are not a thing, title and author is different every comic, rate and chapter is just number and is_completed is only yes or no.
 
-F2 Which step failed first for you, and what did the error say?
- 
- - when i try to run the php artisan db:show --counts and the error said RuntimeException the 'intl' PHP extension is required to use [format] method.
+G2 What number did screenshot 6 show, and why exactly that number?
 
-F3 You changed no Blade file in Part D, yet your pages still work. Why not?
+ - screenshot 6 show 6. because 1 query to get all 5 comics and then 1 query each comic to get the genre so 1 + 5 = 6. when i add with('genre') it become 2 because all genre is get in 1 query.
 
- - the pages still work because the existing Blade files were already working
+G3 Your belongsTo method is named in the singular. What would break if you made it plural?
+
+ - if i make it genres() eloquent will look for genres_id column. but my comics table only have genre_id so it cant find the genre and my list page will error in the genre column.
 

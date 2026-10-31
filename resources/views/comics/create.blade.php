@@ -33,19 +33,24 @@
             @enderror
         </div>
         <div class="mb-3">
-            <label class="form-label" for="genre">Genre</label>
-            <select class="form-control" id="genre" name="genre" required>
-                <option value="Action" @selected(old('genre') == 'Action')>Action</option>
-                <option value="Comedy" @selected(old('genre') == 'Comedy')>Comedy</option>
-                <option value="Mystery" @selected(old('genre') == 'Mystery')>Mystery</option>
-                <option value="Drama" @selected(old('genre') == 'Drama')>Drama</option>
-                <option value="Romance" @selected(old('genre') == 'Romance')>Romance</option>
-            </select>
-            @error('genre')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
+            <label class="form-label" for="genre_id">Genre</label>
+            <select class="form-control" id="genre_id" name="genre_id" required>
+        <option value="">Select Genre</option>
+
+        @foreach ($genres as $genre)
+        <option value="{{ $genre->id }}"
+            @selected(old('genre_id') == $genre->id)>
+            {{ $genre->name }}
+        </option>
+        @endforeach
+
+       </select>
+
+       @error('genre_id')
+       <div class="invalid-feedback d-block">
+        {{ $message }}
+       </div>
+       @enderror
         </div>
         <div class="mb-3">
             <label class="form-label" for="rate">Rate</label>
@@ -65,7 +70,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label" for="chapter">Chapter</label>
-            <input type="number" class="form-control" id="chapter" name="chapter" required value="{{ old('chapter') }}"gi>
+            <input type="number" class="form-control" id="chapter" name="chapter" required value="{{ old('chapter') }}">
             @error('chapter')
                 <div class="invalid-feedback d-block">
                     {{$message}}
@@ -73,19 +78,19 @@
             @enderror
         </div>
         <div class="mb-3">
-            <label class="form-label" for="is_complete">Complete</label>
-            <select name="is_complete" class="form-control" id="is_complete" required>
+            <label class="form-label" for="is_completed">Complete</label>
+            <select name="is_completed" class="form-control" id="is_completed" required>
                 <option value="">Select Status</option>
-                <option value="true" @selected(old('is_complete') == 'true')>Yes</option>
-                <option value="false" @selected(old('is_complete') == 'false')>No</option>
+                <option value="1" @selected(old('is_completed') == '1')>Yes</option>
+                <option value="0" @selected(old('is_completed') == '0')>No</option>
             </select>
-            @error('is_complete')
+            @error('is_completed')
                 <div class="invalid-feedback d-block">
                     {{$message}}
                 </div>
             @enderror
         </div>
-        <button type="submit" class="btn btn-primary" "style=transform: rotate (-)">Add Comics</button>
+        <button type="submit" class="btn btn-primary">Add Comics</button>
         <a href="{{ route('comics.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 

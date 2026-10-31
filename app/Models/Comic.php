@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comic extends Model
 {
     protected $fillable = [
         'title',
         'author',
-        'genre',
+        'genre_id',
         'rate',
         'chapter',
         'is_completed'
@@ -20,7 +21,12 @@ class Comic extends Model
         return [
             'rate' => 'float',
             'chapter' => 'integer',
-            'is_complete' => 'boolean'
+            'is_completed' => 'boolean'
         ];
+    }
+
+    public function genre(): BelongsTo        // singular
+    {
+        return $this->belongsTo(Genre::class);
     }
 }
