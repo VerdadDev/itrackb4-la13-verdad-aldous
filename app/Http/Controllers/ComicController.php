@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Comic;
 use App\Models\Genre;
 
@@ -77,6 +78,10 @@ class ComicController extends Controller
      */
     public function update(Request $request, Comic $comic)
     {
+        Log::info('Comic saved', [
+            'id' => $comic->id,
+        ]);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
@@ -96,6 +101,7 @@ class ComicController extends Controller
     public function destroy(Comic $comic)
     {
         $comic->delete();
+        abort_if($comic->genre->comics()->count() === 1, 403);
         return redirect()->route('comics.index')->with('success', 'Comic deleted successfully.');
     }
 
