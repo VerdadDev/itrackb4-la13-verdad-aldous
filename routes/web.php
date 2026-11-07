@@ -12,7 +12,4 @@ Route::get('/comics/filter/{genre_id?}', function ($genre_id = null) {
     return redirect()->route('comics.index', ['genre_id' => $genre_id]);
 })->name('comics.filter');
 
-Route::resource('comics', ComicController::class)->only('index', 'show', 'create', 'store');
-
-
-
+Route::resource('comics', ComicController::class);

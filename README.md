@@ -2,15 +2,17 @@ Lab Activity 10
 
 #Answers
 
-G1 Which column did you turn into a table, and why that one and not another?
+G1 Route model binding needs two things to be true. Name both, and say what happens when only one of them is.
 
- - the one i turn into a table is genre. because genre is a fixed list and the same genre repeat in many comics like dark fantasy is in attack on titan and demon slayer. the other columns are not a thing, title and author is different every comic, rate and chapter is just number and is_completed is only yes or no.
+- The route parameter name must match the controller method parameter.
+  The parameter type must be the correct Eloquent model.
+  If only one matches, Laravel may fail to resolve the model correctly and return an error or treat the value as a regular parameter.
 
-G2 What number did screenshot 6 show, and why exactly that number?
+G2 Your Delete link opened the detail page instead of deleting anything. Explain why.
 
- - screenshot 6 show 6. because 1 query to get all 5 comics and then 1 query each comic to get the genre so 1 + 5 = 6. when i add with('genre') it become 2 because all genre is get in 1 query.
+- A link uses a GET request by default. Deleting requires a DELETE request, so the link only opened the detail page instead of deleting the record. Use a form with @method('DELETE')
 
-G3 Your belongsTo method is named in the singular. What would break if you made it plural?
+G3 old() takes a second argument on your edit form. What would break if you left it out, and what would break if you used only it?
 
- - if i make it genres() eloquent will look for genres_id column. but my comics table only have genre_id so it cant find the genre and my list page will error in the genre column.
-
+- Without it, the edit form may become blank when there is no old input, instead of showing the existing database value.
+  If you use only the second argument, the form always shows the existing value and ignores the user's previous input after validation fails.

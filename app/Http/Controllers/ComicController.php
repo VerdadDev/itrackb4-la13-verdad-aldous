@@ -31,7 +31,7 @@ class ComicController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Comic $comic)
     {
         $genres = Genre::all();
         return view('comics.create', compact('genres'));
@@ -50,7 +50,7 @@ class ComicController extends Controller
             'chapter' => 'required|numeric|min:1|max:2000',
             'is_completed' => 'required|in:1,0',
         ]);
-        
+
         Comic::create($validated);
         return redirect()->route('comics.index')->with('success', 'Comic created successfully.');
     }
@@ -58,34 +58,45 @@ class ComicController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Comic $comic)
     {
-        $comic = Comic::findOrFail($id);
         return view('comics.show', compact('comic'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Comic $comic)
     {
-        //
+        $genres = Genre::all();
+        return view('comics.edit', compact('comic', 'genres'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Comic $comic)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'genre_id' => 'required|exists:genres,id',
+            'rate' => 'required|numeric|min:1|max:5',
+            'chapter' => 'required|numeric|min:1|max:2000',
+            'is_completed' => 'required|in:1,0',
+        ]);
+
+        $comic->update($validated);
+        return redirect()->route('comics.index')->with('success', 'Comic updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Comic $comic)
     {
-        //
+        $comic->delete();
+        return redirect()->route('comics.index')->with('success', 'Comic deleted successfully.');
     }
 
     public function filter($value)
@@ -94,5 +105,4 @@ class ComicController extends Controller
             'genre_id' => $value
         ]);
     }
-
 }

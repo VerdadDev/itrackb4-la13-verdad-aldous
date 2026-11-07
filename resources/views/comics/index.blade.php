@@ -15,11 +15,8 @@
         <tr>
             <th>#</th>
             <th>Title</th>
-            <th>Author</th>
-            <th>Rating</th>
             <th>Genre</th>
-            <th>Chapters</th>
-            <th>Complete</th>
+            <th>Actions</th>
         </tr>
 
         @forelse ($comics as $comic)
@@ -30,19 +27,21 @@
                         {{ $comic->title }}
                     </a>
                 </td>
-                <td>
-                    <a href="{{ route('comics.show', [$comic->id]) }}">
-                        {{ $comic->author }}
-                    </a>
-                </td>
-                <td>{{ $comic->rate }}</td>
                 <td>{{ $comic->genre->name }}</td>
-                <td>{{ $comic->chapter }}</td>
-                <td>{{ $comic->is_completed ? 'Yes' : 'No' }}</td>
+
+                <td>
+                    <a href="{{ route('comics.edit', [$comic->id]) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ route('comics.destroy', [$comic->id]) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to delete this comic?')">Delete</button>
+                    </form>
+                </td>
             </tr>
         @empty
             <tr>
-                <td colspan="7">No comics found.</td>
+                <td colspan="8">No comics found.</td>
             </tr>
         @endforelse
 
