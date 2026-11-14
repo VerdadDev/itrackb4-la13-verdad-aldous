@@ -9,46 +9,50 @@ use App\Models\Genre;
 
 class ComicController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     public function index(Request $request)
     {
+        $search  = $request->query('search');
         $genreId = $request->query('genre_id');
+        $sort    = $request->query('sort', 'title');
+
+        if (! in_array($sort, ['title', 'rate'])) {
+            $sort = 'title';
+        }
+
+        $genres = Genre::all();
 
         $query = Comic::with('genre');
 
-        if ($genreId) {
-            $query = $query->where('genre_id', $genreId);
+        if ($search) {
+            $query = $query->where('title', 'like', "%{$search}%");
         }
 
-        $comics = $query->get();
+        if ($genreId) {
+            $query->where('genre_id', $genreId);
+        }
 
-        return view('comics.index', compact('comics'));
+        $comics = Comic::with('genre')
+            ->orderBy($sort, $sort === 'rate' ? 'desc' : 'asc')
+            ->paginate(5)
+            ->withQueryString();
+
+        return view('comics.index', compact('comics', 'genres', 'sort'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Comic $comic)
+    public function create()
     {
         $genres = Genre::all();
         return view('comics.create', compact('genres'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'genre_id' => 'required|exists:genres,id',
-            'rate' => 'required|numeric|min:1|max:5',
-            'chapter' => 'required|numeric|min:1|max:2000',
+            'title'        => 'required|string|max:255',
+            'author'       => 'required|string|max:255',
+            'genre_id'     => 'required|exists:genres,id',
+            'rate'         => 'required|numeric|min:1|max:5',
+            'chapter'      => 'required|numeric|min:1|max:2000',
             'is_completed' => 'required|in:1,0',
         ]);
 
@@ -56,38 +60,27 @@ class ComicController extends Controller
         return redirect()->route('comics.index')->with('success', 'Comic created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Comic $comic)
     {
         return view('comics.show', compact('comic'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Comic $comic)
     {
         $genres = Genre::all();
         return view('comics.edit', compact('comic', 'genres'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Comic $comic)
     {
-        Log::info('Comic saved', [
-            'id' => $comic->id,
-        ]);
+        Log::info('Comic updated', ['id' => $comic->id]);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'genre_id' => 'required|exists:genres,id',
-            'rate' => 'required|numeric|min:1|max:5',
-            'chapter' => 'required|numeric|min:1|max:2000',
+            'title'        => 'required|string|max:255',
+            'author'       => 'required|string|max:255',
+            'genre_id'     => 'required|exists:genres,id',
+            'rate'         => 'required|numeric|min:1|max:5',
+            'chapter'      => 'required|numeric|min:1|max:2000',
             'is_completed' => 'required|in:1,0',
         ]);
 
@@ -95,20 +88,14 @@ class ComicController extends Controller
         return redirect()->route('comics.index')->with('success', 'Comic updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Comic $comic)
     {
         $comic->delete();
-        abort_if($comic->genre->comics()->count() === 1, 403);
         return redirect()->route('comics.index')->with('success', 'Comic deleted successfully.');
     }
 
     public function filter($value)
     {
-        return redirect()->route('comics.index', [
-            'genre_id' => $value
-        ]);
+        return redirect()->route('comics.index', ['genre_id' => $value]);
     }
 }

@@ -1,50 +1,107 @@
-
 @extends('layouts.app')
 
 @section('title', 'Comics')
 
 @section('content')
 
-    <button class="btn btn-primary mt-3">
-        <a href="{{ route('comics.create') }}" class="text-white">
-            Add Comics
-        </a>
-    </button>
+    <form method="GET" action="{{ route('comics.index') }}">
+    <input type="text" name="search" value="{{ request('search') }}">
 
-    <table class="table table-striped mt-4" border="1" cellpadding="8">
-        <tr>
-            <th>#</th>
-            <th>Title</th>
-            <th>Genre</th>
-            <th>Actions</th>
-        </tr>
 
-        @forelse ($comics as $comic)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>
-                    <a href="{{ route('comics.show', [$comic->id]) }}">
-                        {{ $comic->title }}
-                    </a>
-                </td>
-                <td>{{ $comic->genre->name }}</td>
+    <select name="genre_id">
+        <option value="">All Genre</option>
+        @foreach ($genres as $genre)
+            <option value="{{ $genre->id }}"
+                @selected(request('genre_id') == $genre->id)>{{ $genre->name }}</option>
+        @endforeach
+    </select>
 
-                <td>
-                    <a href="{{ route('comics.edit', [$comic->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form action="{{ route('comics.destroy', [$comic->id]) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Are you sure you want to delete this comic?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="8">No comics found.</td>
-            </tr>
-        @endforelse
 
-    </table>
+    <select name="sort">
+        <option value="">Any</option>
+        <option value="title" @selected($sort === 'title')>Sort by title</option>
+        <option value="0" @selected($sort === 'rate')>Sort by rate</option>
+    </select>
+
+
+    <button>Apply</button>
+    <a href="{{ route('comics.index') }}">Clear</a>
+</form>
+
+
+    {{-- ── Table ─────────────────────────────────────────────── --}}
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:50px">#</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Genre</th>
+                        <th class="text-center">Rating</th>
+                        <th class="text-center">Chapters</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center" style="width:140px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($comics as $comic)
+                        <tr>
+                            <td class="text-muted">{{ $loop->iteration }}</td>
+                            <td>
+                                <a href="{{ route('comics.show', $comic->id) }}"
+                                   class="fw-semibold text-decoration-none">
+                                    {{ $comic->title }}
+                                </a>
+                            </td>
+                            <td>{{ $comic->author }}</td>
+                            <td>
+                                <span class="badge rounded-pill bg-primary-subtle text-primary">
+                                    {{ $comic->genre->name }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="bi bi-star{{ $i <= $comic->rate ? '-fill text-warning' : ' text-secondary opacity-25' }}"></i>
+                                @endfor
+                            </td>
+                            <td class="text-center">{{ $comic->chapter }}</td>
+                            <td class="text-center">
+                                @if($comic->is_completed)
+                                    <span class="badge bg-success">Completed</span>
+                                @else
+                                    <span class="badge bg-warning text-dark">Ongoing</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ route('comics.edit', $comic->id) }}"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('comics.destroy', $comic->id) }}"
+                                      method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Delete \'{{ addslashes($comic->title) }}\'?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                No comics found.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            {{ $comics->links()}}
+        </div>
+    </div>
 
 @endsection

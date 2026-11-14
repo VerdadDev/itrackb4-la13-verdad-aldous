@@ -4,98 +4,34 @@
 
 @section('content')
 
-    <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">
-                @yield('title', 'Edit Comic')
-            </h3>
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Comic: {{ $comic->title }}</h5>
+                </div>
+                <div class="card-body p-4">
+
+                    {{-- PUT is spoofed via @method('PUT') --}}
+                    <form method="POST" action="{{ route('comics.update', $comic->id) }}">
+                        @csrf
+                        @method('PUT')
+
+                        @include('comics._form')
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="bi bi-save me-1"></i>Update Comic
+                            </button>
+                            <a href="{{ route('comics.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
     </div>
-
-    <form method="POST" action="{{ route('comics.update', $comic->id) }}">
-        @csrf
-        @method('PUT')
-        <div class="mb-3">
-            <label class="form-label" for="title">Title</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $comic->title) }}" required>
-            @error('title')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="author">Author</label>
-            <input type="text" class="form-control" id="author" name="author" value="{{ old('author', $comic->author) }}" required>
-            @error('author')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="genre_id">Genre</label>
-            <select class="form-control" id="genre_id" name="genre_id" required>
-        <option value="">Select Genre</option>
-
-        @foreach ($genres as $genre)
-        <option value="{{ $genre->id }}">
-            @selected(old('genre_id', $comic->genre_id) == $genre->id)
-            {{ $genre->name }}  
-        </option>
-        @endforeach
-
-       </select>
-
-       @error('genre_id')
-       <div class="invalid-feedback d-block">
-        {{ $message }}
-       </div>
-       @enderror
-        </div>
-         </div>
-        <div class="mb-3">
-            <label class="form-label" for="rate">Rate</label>
-            <select class="form-control" id="rate" name="rate" required>
-                <option value="">Input your rating</option>
-                <option value="1" @selected(old('rate') == '1')>1</option>
-                <option value="2" @selected(old('rate') == '2')>2</option>
-                <option value="3" @selected(old('rate') == '3')>3</option>
-                <option value="4" @selected(old('rate') == '4')>4</option>
-                <option value="5" @selected(old('rate') == '5')>5</option>
-            </select>
-            @error('rate')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="chapter">Chapter</label>
-            <input type="number" class="form-control" id="chapter" name="chapter" required value="{{ old('chapter') }}">
-            @error('chapter')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="is_completed">Complete</label>
-            <select name="is_completed" class="form-control" id="is_completed" required>
-                <option value="">Select Status</option>
-                <option value="1" @selected(old('is_completed') == '1')>Yes</option>
-                <option value="0" @selected(old('is_completed') == '0')>No</option>
-            </select>
-            @error('is_completed')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <button type="submit" class="btn btn-primary">Update Comic</button>
-        <a href="{{ route('comics.index') }}" class="btn btn-secondary">Cancel</a>
-    </form>
-    @yield('content')
-
 
 @endsection

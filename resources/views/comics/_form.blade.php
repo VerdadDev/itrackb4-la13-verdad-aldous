@@ -1,98 +1,97 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>@yield('title', 'Add Comics')</title>
-</head>
-<body class="container text-bg-white">
-    
-    <div class="card">
-        <div class="card-body">
-            <h3 class="card-title">
-                @yield('title', 'Add Comics')
-            </h3>
-        </div>
+{{--
+    Shared form partial — included by both create.blade.php and edit.blade.php.
+    Required variables in scope:
+        $comic   → Comic model instance (new or existing)
+        $genres  → Collection<Genre>
+--}}
+
+<div class="mb-3">
+    <label class="form-label fw-semibold" for="title">Title</label>
+    <input type="text"
+           class="form-control @error('title') is-invalid @enderror"
+           id="title" name="title"
+           value="{{ old('title', $comic->title) }}"
+           placeholder="e.g. One Piece"
+           required>
+    @error('title')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-semibold" for="author">Author</label>
+    <input type="text"
+           class="form-control @error('author') is-invalid @enderror"
+           id="author" name="author"
+           value="{{ old('author', $comic->author) }}"
+           placeholder="e.g. Eiichiro Oda"
+           required>
+    @error('author')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-semibold" for="genre_id">Genre</label>
+    <select class="form-select @error('genre_id') is-invalid @enderror"
+            id="genre_id" name="genre_id" required>
+        <option value="">— Select Genre —</option>
+        @foreach ($genres as $genre)
+            <option value="{{ $genre->id }}"
+                @selected(old('genre_id', $comic->genre_id) == $genre->id)>
+                {{ $genre->name }}
+            </option>
+        @endforeach
+    </select>
+    @error('genre_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label fw-semibold" for="rate">Rating</label>
+        <select class="form-select @error('rate') is-invalid @enderror"
+                id="rate" name="rate" required>
+            <option value="">— Select Rating —</option>
+            @for ($i = 1; $i <= 5; $i++)
+                <option value="{{ $i }}" @selected(old('rate', $comic->rate) == $i)>
+                    {{ $i }} / 5
+                </option>
+            @endfor
+        </select>
+        @error('rate')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
 
-    <form method="POST" action="">
-        <div class="mb-3">
-            <label class="form-label" for="title">Title</label>
-            <input type="text" class="form-control" id="title" name="title" value="{{ old('title', $comic->title) }}" required>
-            @error('title')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="author">Author</label>
-            <input type="text" class="form-control" id="author" name="author" value="{{ old('author', $comic->author) }}" required>
-            @error('author')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="genre_id">Genre</label>
-            <select class="form-control" id="genre_id" name="genre_id" required>
-        <option value="">Select Genre</option>
+    <div class="col-md-4">
+        <label class="form-label fw-semibold" for="chapter">Chapter Count</label>
+        <input type="number"
+               class="form-control @error('chapter') is-invalid @enderror"
+               id="chapter" name="chapter" min="1" max="2000"
+               value="{{ old('chapter', $comic->chapter) }}"
+               placeholder="e.g. 1050"
+               required>
+        @error('chapter')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 
-        @foreach ($genres as $genre)
-        <option value="{{ $genre->id }}">
-            @selected(old('genre_id', $comic->genre_id) == $genre->id)
-            {{ $genre->name }}  
-        </option>
-        @endforeach
-
-       </select>
-
-       @error('genre_id')
-       <div class="invalid-feedback d-block">
-        {{ $message }}
-       </div>
-       @enderror
-        </div>
-         </div>
-        <div class="mb-3">
-            <label class="form-label" for="rate">Rate</label>
-            <select class="form-control" id="rate" name="rate" required>
-                <option value="">Input your rating</option>
-                <option value="1" @selected(old('rate') == '1')>1</option>
-                <option value="2" @selected(old('rate') == '2')>2</option>
-                <option value="3" @selected(old('rate') == '3')>3</option>
-                <option value="4" @selected(old('rate') == '4')>4</option>
-                <option value="5" @selected(old('rate') == '5')>5</option>
-            </select>
-            @error('rate')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="chapter">Chapter</label>
-            <input type="number" class="form-control" id="chapter" name="chapter" required value="{{ old('chapter') }}">
-            @error('chapter')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="is_completed">Complete</label>
-            <select name="is_completed" class="form-control" id="is_completed" required>
-                <option value="">Select Status</option>
-                <option value="1" @selected(old('is_completed') == '1')>Yes</option>
-                <option value="0" @selected(old('is_completed') == '0')>No</option>
-            </select>
-            @error('is_completed')
-                <div class="invalid-feedback d-block">
-                    {{$message}}
-                </div>
-            @enderror
-        </div>
-    </form>
-    @yield('content')
-
-</body>
-</html>
+    <div class="col-md-4">
+        <label class="form-label fw-semibold" for="is_completed">Status</label>
+        <select class="form-select @error('is_completed') is-invalid @enderror"
+                id="is_completed" name="is_completed" required>
+            <option value="">— Select Status —</option>
+            <option value="1" @selected(old('is_completed', $comic->is_completed ? '1' : '0') == '1')>
+                Completed
+            </option>
+            <option value="0" @selected(old('is_completed', $comic->is_completed ? '1' : '0') == '0')>
+                Ongoing
+            </option>
+        </select>
+        @error('is_completed')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+</div>

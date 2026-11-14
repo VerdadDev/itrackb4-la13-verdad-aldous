@@ -1,17 +1,23 @@
-<nav class="mb-3">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a href="{{ route('comics.index') }}"
-                class="nav-link {{ request()->is('comics*') ? 'active' : '' }}">
-                All Comics
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('comics.filter') }}"
-                class="nav-link" 
-                {{ request()->is('comics/filter*') ? 'active' : '' }}>
-                Filter Comics by Genre
-            </a>
-        </li>
-    </ul>
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ route('home') }}">Comics Record</a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}"
+                       href="{{ route('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('comics.*') ? 'active' : '' }}"
+                       href="{{ route('comics.index') }}">Comics</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
