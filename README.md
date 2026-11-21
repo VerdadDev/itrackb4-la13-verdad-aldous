@@ -1,13 +1,25 @@
 #Answers
 
-J1 Your HomeController is not a resource controller. Name two things an index() on a resource controller does that yours does not have to.
+F1 Authentication and authorisation are not the same. In one sentence each: what did this lesson give you, and what is still missing next meeting?
 
-- A resource controller automatically provides CRUD methods like create() and store(). My HomeController only has the methods I manually created, so I don't need to implement all CRUD methods.
+    This lesson taught me how to protect routes using authentication
 
-J2 Your pagination links lost the search term until you added one method. Say what those links contained before, and what the controller therefore received.
+F2 Why does a successful login call session()->regenerate()? What goes wrong if you skip it?
 
-- Before, the pagination links did not contain the search term. Because of this, the controller received an empty search value when I clicked the next page. I fixed it using withQueryString().
+    session()->regenerate() creates a new session ID after login to prevent session fixation attacks. If skipped, an attacker may exploit an existing session ID to access the user's account.
 
-J3 A misspelled sort value does not break your page. Explain why that is worse than an error, and what your allowed list does about it.
+F3 Why does a failed login use the same message for a wrong password and an unknown email?
 
-- It is worse because the page still works but may show incorrectly sorted results without telling the user. The allowed list checks if the sort value is valid. If it is not, it uses the default sorting value, title.
+    Using the same error message prevents attackers from knowing whether an email is registered or if the password is wrong, helping protect user accounts from enumeration attacks
+
+F4 Why do index and show stay public while create/edit/update/destroy use auth?
+
+    Index and show are public so visitors can view records, while create, edit, update, and destroy require authentication because they involve adding, modifying, or deleting data.
+
+F5 You hid Add (and actions) for guests. Why is that not enough to secure those actions? What actually stops a stranger?
+
+    Hiding buttons is not enough because a stranger can still access the URL or send a request directly. The auth middleware protects the routes on the server and blocks unauthenticated users from performing those actions.
+
+F6 In screenshot 20 the route name was wrong. Why does auth middleware care that the route is named exactly login?
+
+    Auth middleware uses the exact route name login to know where to redirect unauthenticated users. If the route name is incorrect or missing, Laravel may throw a route-not-found error instead of redirecting properly.

@@ -4,6 +4,13 @@
 
 @section('content')
 
+
+    @auth
+    <a href="{{ route('comics.create') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Add Character
+    </a>
+    @endauth
+
     <form method="GET" action="{{ route('comics.index') }}">
     <input type="text" name="search" value="{{ request('search') }}">
 
@@ -42,7 +49,9 @@
                         <th class="text-center">Rating</th>
                         <th class="text-center">Chapters</th>
                         <th class="text-center">Status</th>
+                        @auth
                         <th class="text-center" style="width:140px">Actions</th>
+                        @endauth
                     </tr>
                 </thead>
                 <tbody>
@@ -74,6 +83,7 @@
                                     <span class="badge bg-warning text-dark">Ongoing</span>
                                 @endif
                             </td>
+                            @auth
                             <td class="text-center">
                                 <a href="{{ route('comics.edit', $comic->id) }}"
                                    class="btn btn-warning btn-sm">
@@ -89,6 +99,7 @@
                                     </button>
                                 </form>
                             </td>
+                            @endauth
                         </tr>
                     @empty
                         <tr>

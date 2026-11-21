@@ -19,5 +19,17 @@
                 </li>
             </ul>
         </div>
+        @guest
+    <a href="{{ route('login') }}">Log in</a>
+    <a href="{{ route('register') }}">Register</a>
+@endguest
+@auth
+    <span class="text-primary">{{Auth::user()->name }}</span>
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button>Log out</button>
+    </form>
+@endauth
+
     </div>
 </nav>
